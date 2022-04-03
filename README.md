@@ -1,76 +1,103 @@
-# project1
-#1
-SEC_IN_MINUTE = 60
-SEC_IN_HOUR = SEC_IN_MINUTE * 60
-SEC_IN_DAY = SEC_IN_HOUR * 24
+#1 Выяснить тип результата выражений
+print(f"type(14 * 3) is {type(15 * 3)}")
+print(f"type(15 / 3) is {type(15 / 3)}")
+print(f"type(15 // 3) is {type(15 // 3)}")
+print(f"type(15 ** 3) is {type(15 ** 3)}")
 
-in_sec_str = input("количество секунд: ")
-output_msg:str = ""
+#2 Дан список:
+input_list = ['в', '5', 'часов', '17', 'минут', 'температура', 'воздуха', 'была', '+5', 'градусов']
+length_of_list:int = len(input_list)
+store_id = id(input_list)
 
-try:
+print(f"id before {store_id}")
 
-    sec = int(in_sec_str)
+for _ in range(length_of_list): # pyright change i to _
 
-    if sec >= SEC_IN_DAY:
-        output_msg += str(sec // SEC_IN_DAY) + " дн "
-        sec %= SEC_IN_DAY
+    elem = input_list.pop(0)
 
-    if sec >= SEC_IN_HOUR:
-        output_msg += str(sec // SEC_IN_HOUR) + " час "
-        sec %= SEC_IN_HOUR
+    if elem.isdigit() and elem.isalnum(): # no nessary use isalnum in here but I use
+        input_list.append(f'"{int(elem):02d}"')
+        # or   ['"', "00", '"']
+        # input_list.append('"')
+        # input_list.append(f'{int(elem):02d}')
+        # input_list.append('"')
 
-    if sec >= SEC_IN_MINUTE:
-        output_msg += str(sec // SEC_IN_MINUTE) + " мин "
-        sec %= SEC_IN_MINUTE
 
-    output_msg += str(sec) + " сек"
-    print(output_msg)
+    elif elem[0] == "+" and elem[1].isdigit():
+        input_list.append(f'"+{int(elem):02d}"')
+        # or   ['"', "+00", '"']
+        # input_list.append('"')
+        # input_list.append(f'+{int(elem):02d}')
+        # input_list.append('"')
 
-except ValueError:
-    print(in_sec_str, "isn't number.")
+    else:
+        input_list.append(elem)
 
-#2
+print(' '.join(input_list))
 
-"""output:
-    sum of odd elem which % 7
-    sum of odd (elem + 17) which % 7
-"""
+print(f"id after {id(input_list)}")
 
-# lazy list
-list_of_odd = range(1, 1000 + 1, 2)
+#4 Дан список, содержащий искажённые данные с должностями и именами сотрудников
+input_list = ['инженер-конструктор Игорь',
+            'главный бухгалтер МАРИНА',
+            'токарь высшего разряда нИКОЛАй',
+            'директор аэлита']
+answer = {}
 
-sum_with_17:int = 0
-sum_without_17:int = 0
+for string in input_list:
+    correct_name = string.split()[-1].capitalize()
+    print(f"Привет, {correct_name}!")
 
-for elem in list_of_odd:
+#5 Создать список, содержащий цены на товары (10–20 товаров)
 
-    cube = elem ** 3
-    cube_with_17 = (elem + 17) ** 3
+input_list = [57.8, 46.51, 97, 76.05, 13.11, 87.93, 27, 97.09, 0.16, 42,
+        96.64, 34.17, 97.45, 40.62, 84.94, 7, 52.23, 93.74, 89, 3.93]
 
-    if cube % 7 == 0:
-        sum_without_17 += cube
+store_id = id(input_list)
+print(input_list)
 
-    if cube_with_17 % 7 == 0:
-        sum_with_17 += cube_with_17
+#5.a
+print(f"{'a':-^100}")
 
-print("сумма без 17:", sum_without_17)
-print("сумма c 17:", sum_with_17)
+end_word:str = ", " # будет ли использованно больше памяти если эта строчка будет в цикле ?
 
-#3
-"""conjugation word процент from 1 to 100"""
+for i, num in enumerate(input_list):
 
-phrase_without_end: str = "процент"
+    fix_price = str(f"{float(num):.2f}").split(".")
 
-for i in range(1, 100 + 1):
-    # exceptions + 5 - 9 end
-    if (i % 10 == 0 or
-            i == 11 or
-            i == 12 or
-            i == 13 or
-            i == 14 or
-            5 <= i % 10 <= 9):
-        print(i, phrase_without_end + "ов")
-    elif 2 <= i % 10 < 5:
-        print(i, phrase_without_end + "a")
-    elif i % 10 == 1:
-        print(i, phrase_without_end)
+    if i == len(input_list) - 1:
+        end_word = "\n"
+
+    print(f"{fix_price[0]} руб {fix_price[1]} коп", end=end_word)
+
+#5.b
+print(f"{'b':-^100}")
+
+print(f"id before sort {store_id}")
+input_list.sort()
+print(input_list)
+print(f"id after sort {id(input_list)}")
+
+if store_id == id(input_list):
+    print("In place")
+else:
+    print("Diff obj")
+
+
+#5.c
+print(f"{'c':-^100}")
+
+copy_of_list = input_list.copy() # or use input_list[:]
+copy_of_list.sort(reverse=True) # or use list(sorted()) without copy
+
+print(copy_of_list)
+print(store_id)
+print(id(copy_of_list))
+
+if store_id == id(copy_of_list):
+    print("In place")
+else:
+    print("Diff obj")
+
+
+
