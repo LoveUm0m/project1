@@ -1,114 +1,65 @@
 #task 1,2
-def odd_num(to):
-    """ task 1 """
-    for i in range(1, to + 1, 2):
-        yield i
+def find_spamer(parsed_log):
+    pass
 
+    if not parsed_log:
+        return None
 
-def odd_num_no_yield(to):
-    """ task 2 """
-    return (x for x in range(1, to + 1, 2))
+    db = {}
 
-
-if __name__ == "__main__":
-    a_gen = odd_num(15)
-    b_gen = odd_num_no_yield(15)
-
-    print("a_gen type", type(a_gen))
-    print("b_gen type", type(b_gen))
-
-    for elem in a_gen:
-        print(elem)
-
-    print(f"empty {list(a_gen)}")
-
-#task 3
-from sys import getsizeof
-
-tutors = [
-
-    'Иван', 'Анастасия', 'Петр', 'Сергей',
-
-    'Дмитрий', 'Борис', 'Елена'
-
-]
-klasses = [
-
-    '9А', '7В', '9Б', '9В', '8Б',  # '10А', '10Б', '9А'
-
-]
-
-
-def my_zip_gen():
-
-    len_klasses = len(klasses)
-
-    return ((tut, klasses[i]) if i < len_klasses else (tut, None)
-            for i, tut in enumerate(tutors))
-
-
-if __name__ == '__main__':
-
-    gen = my_zip_gen()
-    print(type(gen))
-    print(getsizeof(gen))
-    print(*gen)
-
-#task 4
-
-import time
-import sys
-
-
-def my_filter(*argv):
-    return (argv[i] for i in range(1, len(argv)) if argv[i] > argv[i - 1])
-
-
-if __name__ == "__main__":
-
-    src = [300, 2, 12, 44, 1, 1, 4, 10, 7, 1, 78, 123, 55]
-    result = [12, 44, 4, 10, 78, 123]
-
-    t = time.perf_counter()
-    answ = my_filter(*src)
-    print(time.perf_counter() - t)
-    print(sys.getsizeof(answ))
-    print(list(answ) == result)
-
-#task 5
-
-import time
-import sys  
-
-
-def my_set(*argv):
-    """ return unique elemts of argv """
-    answ = set()
-
-    for elem in argv:
-        if not elem in answ:
-            answ.add(elem)
+    for log in  parsed_log:
+        if not db.get(log[0]):
+            db[log[0]] = {"count":1, "files":set([log[2]])}
         else:
-            answ.remove(elem)
+            db[log[0]]["count"] += 1
+            db[log[0]]["files"].add(log[2])
 
-    return [x for x in argv if x in answ]  # best
-    # return [ x for x in argv if argv.count(x) == 1 ] # worst
-    # return [ x for i, x in enumerate(argv) if not x in [*argv[:i], *argv[i+1:]] ] # bad
+    return max(db.items(), key=lambda x: x[1]["count"])
 
 
 if __name__ == "__main__":
+   a = parse_log("./nginx_logs.txt")
+   for e in a:
+       print(e)
+   parsed_log = parse_log("./nginx_logs.txt")
+   spamer = find_spamer(parsed_log) 
 
-    src = [2, 2, 2, 7, 23, 1, 44, 44, 3, 2, 10, 7, 4, 11]
-    result = [23, 1, 3, 10, 4, 11]
+#task 3,4
+import json
 
-    t = time.perf_counter()
-    r = my_set(*src)
+from myutils import my_zip_gen
 
-    print("mem: ", sys.getsizeof(r))
-    print("time: ", time.perf_counter() - t)
 
-    print(r == result)
-    print(r)
+def groping(
+        output_pth="./out.txt",
+        user_pth="./users.csv",
+        hobby_pth="./hobby.csv"):
 
-    print(test_set(*src))
+    if not (user_pth or hobby_pth):
+        return -1
+
+    user_lines = None
+    hobby_lines = None
+
+    with open(user_pth, "r", encoding="utf-8") as user_file:
+        user_lines = user_file.readlines()
+
+    with open(hobby_pth, "r", encoding="utf-8") as hobby_file:
+        hobby_lines = hobby_file.readlines()
+
+    if len(user_lines) < len(hobby_lines):
+        return 1
+
+    group = {}
+
+    for fio, hobby in my_zip_gen(user_lines, hobby_lines):
+        fio = fio.replace("\n", "").replace(",", " ")
+        group[fio] = hobby.replace("\n", "") if hobby else None
+
+    with open(output_pth, "w+", encoding="utf-8") as out_file:
+        out_file.writelines(json.dumps(group))
+    
+
+
+    return 0
 
