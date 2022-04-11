@@ -1,63 +1,114 @@
+#task 1,2
+def odd_num(to):
+    """ task 1 """
+    for i in range(1, to + 1, 2):
+        yield i
 
 
-#task 1 and 2 
-
-DICT_NUM = {
-
-    "zero": "ноль",
-    "one": "один",
-    "two": "два",
-    "three": "три",
-    "four": "четире",
-    "five": "пять",
-    "six": "шесть",
-    "seven": "семь",
-    "eight": "восемь",
-    "nine": "девять",
-}
+def odd_num_no_yield(to):
+    """ task 2 """
+    return (x for x in range(1, to + 1, 2))
 
 
-def num_translate(num_word):
-    """ convert one to один...nine to девять """
-    return DICT_NUM.get(num_word)
+if __name__ == "__main__":
+    a_gen = odd_num(15)
+    b_gen = odd_num_no_yield(15)
+
+    print("a_gen type", type(a_gen))
+    print("b_gen type", type(b_gen))
+
+    for elem in a_gen:
+        print(elem)
+
+    print(f"empty {list(a_gen)}")
+
+#task 3
+from sys import getsizeof
+
+tutors = [
+
+    'Иван', 'Анастасия', 'Петр', 'Сергей',
+
+    'Дмитрий', 'Борис', 'Елена'
+
+]
+klasses = [
+
+    '9А', '7В', '9Б', '9В', '8Б',  # '10А', '10Б', '9А'
+
+]
 
 
-def num_translate_adv(num_word):
-    """ convert one to один...nine to девять with firt char capitalize """
-    to_key = DICT_NUM.get(num_word.lower())
+def my_zip_gen():
 
-    if to_key:
-        return to_key.capitalize() if num_word[0].isupper() else to_key
+    len_klasses = len(klasses)
 
-#task 3 and 4
-def thesaurus(*args):
-    """ conver name list to dictionary like {A: [Alex..] , B:[Bob..]} """
-    out_dict = {}
-
-    for name in args:
-
-        if out_dict.get(name[0]):
-            out_dict[name[0]].append(name)
-        else:
-            out_dict[name[0]] = [name]
-
-    return out_dict
+    return ((tut, klasses[i]) if i < len_klasses else (tut, None)
+            for i, tut in enumerate(tutors))
 
 
-def thesaurus_adv(*args):
-    """ conver name list to dictionary like second_name[0]:{name[0]: name + second_name} """
-    out_dict = {}
-    for elem in args:
-        name, second_name = elem.split()
-        if not out_dict.get(second_name[0]):
-            out_dict[second_name[0]] = { name[0] : [elem] }
-        elif not out_dict[second_name[0]].get(name[0]):
-            (out_dict[second_name[0]])[name[0]] = [elem]
-        else:
-            (out_dict[second_name[0]])[name[0]].append(elem)
+if __name__ == '__main__':
 
-    return out_dict
+    gen = my_zip_gen()
+    print(type(gen))
+    print(getsizeof(gen))
+    print(*gen)
+
+#task 4
+
+import time
+import sys
+
+
+def my_filter(*argv):
+    return (argv[i] for i in range(1, len(argv)) if argv[i] > argv[i - 1])
+
+
+if __name__ == "__main__":
+
+    src = [300, 2, 12, 44, 1, 1, 4, 10, 7, 1, 78, 123, 55]
+    result = [12, 44, 4, 10, 78, 123]
+
+    t = time.perf_counter()
+    answ = my_filter(*src)
+    print(time.perf_counter() - t)
+    print(sys.getsizeof(answ))
+    print(list(answ) == result)
 
 #task 5
--
+
+import time
+import sys  
+
+
+def my_set(*argv):
+    """ return unique elemts of argv """
+    answ = set()
+
+    for elem in argv:
+        if not elem in answ:
+            answ.add(elem)
+        else:
+            answ.remove(elem)
+
+    return [x for x in argv if x in answ]  # best
+    # return [ x for x in argv if argv.count(x) == 1 ] # worst
+    # return [ x for i, x in enumerate(argv) if not x in [*argv[:i], *argv[i+1:]] ] # bad
+
+
+if __name__ == "__main__":
+
+    src = [2, 2, 2, 7, 23, 1, 44, 44, 3, 2, 10, 7, 4, 11]
+    result = [23, 1, 3, 10, 4, 11]
+
+    t = time.perf_counter()
+    r = my_set(*src)
+
+    print("mem: ", sys.getsizeof(r))
+    print("time: ", time.perf_counter() - t)
+
+    print(r == result)
+    print(r)
+
+    print(test_set(*src))
 
